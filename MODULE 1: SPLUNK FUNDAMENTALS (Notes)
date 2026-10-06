@@ -1,0 +1,107 @@
+1.1 What is Splunk?
+
+Splunk is a platform that collects, indexes, and searches machine data (logs, metrics, events) from any source. SIEM is one use case, built on top of it with Splunk Enterprise Security.
+
+Why it exists: Logs are scattered across thousands of machines in different formats. Searching each by hand with grep does not scale. Splunk centralizes them and lets you search everything in seconds.
+
+Splunk vs traditional log searching
+
+Traditional (grep on servers)	Splunk
+Log in to each machine	One search interface
+Different formats, manual parsing	Extracts fields automatically
+No history across machines	Time-based search across all data
+No alerts or dashboards	Built-in alerts, dashboards, reports
+
+Main use cases: security monitoring (SIEM), IT operations and troubleshooting, application monitoring, compliance and audit reporting.
+
+1.2 Splunk product editions (do not mix these up)
+Product	What it is
+Splunk Enterprise	Self-hosted software you install (your lab)
+Splunk Cloud Platform	Splunk-managed, hosted version
+Splunk Enterprise Security (ES)	A premium app on top of Splunk that adds SOC features (notable events, risk, incident review)
+Splunk SOAR	A separate product for automating response (playbooks)
+Splunk Free	Limited, single-user edition (about 500 MB/day indexing, no authentication/roles, and reduced features such as no distributed search). Verify exact limits in current Splunk docs.
+Enterprise trial	Time-limited full-featured trial (historically 60 days, 500 MB/day). Check the current download page for terms.
+1.3 Architecture components
+DATA SOURCE → FORWARDER → INDEXER → INDEX → SEARCH HEAD → SEARCH → DASHBOARD / ALERT
+Component	Job	Analogy
+Universal Forwarder (UF)	Lightweight agent. Reads data and sends it. Does almost no processing.	Delivery truck
+Heavy Forwarder (HF)	Full Splunk instance that can parse, filter, mask, and route data before sending.	Sorting depot
+Indexer	Receives data, parses it, stores it in indexes, and answers search requests.	Warehouse
+Index	Storage location for events.	Shelf
+Search Head	Web UI where users search and build dashboards/alerts.	Counter
+Deployment Server	Centrally pushes config and apps to many forwarders.	HQ sending instructions
+License Manager	Tracks daily indexed volume against your license.	Meter
+
+UF vs HF (very common interview question)
+
+	UF	HF
+Size	Tiny, low CPU/RAM	Full Splunk
+Parsing	No (mostly)	Yes
+Web UI	No	Yes
+Use	Collect from endpoints/servers	Filter, mask, route, collect from APIs
+1.4 Licensing in one paragraph
+
+Splunk licenses by daily volume of data indexed (GB/day), not by users or searches. Exceeding it creates license warnings, and repeated violations can restrict searching on some license types. Admins monitor this regularly.
+
+1.5 Your lab
+
+On a single machine, one Splunk Enterprise install plays Search Head, Indexer, and License Manager together. This is called a standalone deployment.
+
+1.6 Hands-on (still pending from you)
+
+Run these and send me the output:
+
+bash
+sudo /opt/splunk/bin/splunk status
+/opt/splunk/bin/splunk is the Splunk CLI. status checks if it is running.
+Expected: splunkd is running (PID: ####).
+Errors: "No such file or directory" means Splunk is installed elsewhere. "not running" means start it with ... splunk start.
+
+Then in Splunk Web (http://localhost:8000), search with time set to All time:
+
+spl
+index=* | head 10
+
+Tell me what appeared and the values of host, source, sourcetype.
+
+1.7 Troubleshooting
+Symptom	Likely cause
+Cannot open localhost:8000	Splunk not running, or web port is different
+Search returns nothing	No data ingested yet, wrong time range, or wrong index
+1.8 Interview Q&A (copy into notes)
+
+Q: What is Splunk?
+A: A platform for collecting, indexing, and searching machine-generated data. In a SOC it's used as a SIEM to detect and investigate security events.
+
+Q: Explain Splunk architecture.
+A: Forwarders collect data and send it to indexers, which parse and store it in indexes. Search heads let users search the indexers and build dashboards and alerts.
+
+Q: UF vs HF?
+A: The UF is a lightweight forwarder that only reads and sends data. The HF is a full Splunk instance that can parse, filter, mask, and route before forwarding.
+
+Q: What does the Deployment Server do?
+A: It centrally manages configurations and apps for many forwarders.
+
+Q: How is Splunk licensed?
+A: By the volume of data indexed per day.
+
+Q: Enterprise vs Enterprise Security?
+A: Enterprise is the core platform. ES is an add-on app that provides SIEM features such as notable events, risk-based alerting, and incident review.
+
+1.9 Revision
+Splunk = collect, index, search machine data.
+Forwarder sends, Indexer stores, Search Head searches.
+UF is light, HF can parse and filter.
+License is by daily ingest volume.
+ES and SOAR are separate products from Enterprise.
+Progress tracker
+Module	Status	Score	Weak Areas
+0: Baseline	Done	5.5/15	Fields, indexes, stats, lookups, tstats
+1: Fundamentals	Notes done, hands-on pending	--	--
+Next step
+Run the two hands-on commands and paste the results.
+Answer this quick check, no looking back:
+a) Which component stores data?
+b) Which one is lighter, UF or HF?
+c) What is the license based on?
